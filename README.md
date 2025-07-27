@@ -39,17 +39,6 @@ pipenv shell
 python app.py
 ```
 
-## 🛠️ Project Structure
-
-```markdown
-your-repo/
-│
-├── app.py              # Main application entry point
-├── Pipfile             # Pipenv environment definition
-├── Pipfile.lock        # Pipenv lock file (auto-generated)
-└── README.md           # Project documentation
-```
-
 ## 🧰 Requirements
 
 - Python 3.7+
