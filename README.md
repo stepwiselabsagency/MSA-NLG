@@ -1,4 +1,4 @@
-# MLG App
+# NLG App
 
 This is a Python-based application that uses `pipenv` for dependency management and virtual environment isolation.
 
