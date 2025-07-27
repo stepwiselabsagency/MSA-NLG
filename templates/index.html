@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GPT Responses Website</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+      }
+    
+      h1 {
+        margin-bottom: 20px;
+      }
+    
+      form {
+        margin-bottom: 20px;
+      }
+    
+      input[type="file"] {
+        margin-right: 10px;
+      }
+    
+      input[type="submit"],
+      input[type="file"] {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+    
+      input[type="submit"]:hover,
+      input[type="file"]:hover {
+        background-color: #45a049;
+      }
+    
+      .error {
+        color: red;
+        margin-bottom: 20px;
+      }
+    
+      .output {
+        margin-top: 20px;
+        margin-left: 20px;
+        margin-right: 20px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        background-color: #f5f5f5;
+        border-radius: 5px;
+      }
+    
+      .output p {
+        color: #333;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+
+      .textbox {
+        width: 100%;
+        padding: 10px;
+        box-sizing: border-box;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+
+      .container {
+        display: flex;
+        width: 100%;
+        gap: 10px; /* Optional: Adds space between the inputs */
+      }
+
+      .container input {
+        flex: 1; /* Makes both inputs take equal width */
+        box-sizing: border-box; /* Ensures padding and border are included in the width */
+      }
+
+      .hidden {
+        display: none;
+      }
+    </style>
+    <script>
+      function toggleArena() {
+        const arenaCheckbox = document.getElementById("arenaToggle");
+        const player4Fields = document.querySelectorAll(".player4-fields");
+        player4Fields.forEach((field) => {
+          field.classList.toggle("hidden", arenaCheckbox.checked);
+        });
+      }
+    </script>
+  </head>
+  <body>
+
+    <h1 style="text-align: center; color: #333; font-size: 24px; margin-bottom: 20px;">No Gpt Responses</h1>
+
+    {% if error %}
+      <p class="error">{{ error }}</p>
+    {% endif %}
+
+    <div style="display: flex; justify-content: center;">
+      <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".csv">
+        <input type="radio" name="option" value="other" checked> Other
+        <input type="radio" name="option" value="Subsidiary final"> Subsidiary final
+        <input type="radio" name="option" value="Semifinal"> Semi final
+        <input type="radio" name="option" value="Final"> final
+        <input type="submit" name="word" value="Generate Word Docx">
+
+        <br><br>
+
+        <!-- Arena Toggle -->
+        <label style="font-size: 16px;">
+          <input type="checkbox" id="arenaToggle" name="arena" onchange="toggleArena()">
+          Arena
+        </label>
+
+        <br><hr><br>
+
+        <div class="container">
+          <input type="text" name="handicapgoalswinning" placeholder="Handicap Goals Winning Team Points" pattern="-?\d+(\.\d+)?" title="Please enter a valid integer">
+          <input type="text" name="handicapgoalslosing" placeholder="Handicap Goals Losing Team Points" pattern="-?\d+(\.\d+)?" title="Please enter a valid integer">
+        </div>
+        <br>
+        <hr> 
+        <br>
+        <input type="text" name="field1" placeholder="Team 1 Player 1 Name">
+        <input type="text" name="field2" placeholder="Team 1 Player 2 Name">
+        <input type="text" name="field3" placeholder="Team 1 Player 3 Name">
+        <input type="text" name="field4" class="player4-fields" placeholder="Team 1 Player 4 Name">
+        <br>
+        <br>
+        <input type="text" name="field5" placeholder="Team 1 Player 1 Order" pattern="-?\d+(\.\d+)?" title="Please enter a valid integer">
+        <input type="text" name="field6" placeholder="Team 1 Player 2 Order" pattern="-?\d+(\.\d+)?" title="Please enter a valid integer">
+        <input type="text" name="field7" placeholder="Team 1 Player 3 Order" pattern="-?\d+(\.\d+)?" title="Please enter a valid integer">
+        <input type="text" name="field8" class="player4-fields" placeholder="Team 1 Player 4 Order" pattern="-?\d+(\.\d+)?" title="Please enter a valid integer">
+        <br><hr><br>
+
+        <input type="text" name="field11" placeholder="Team 2 Player 1 Name">
+        <input type="text" name="field22" placeholder="Team 2 Player 2 Name">
+        <input type="text" name="field33" placeholder="Team 2 Player 3 Name">
+        <input type="text" name="field44" class="player4-fields" placeholder="Team 2 Player 4 Name">
+        <br>
+        <br>
+        <input type="text" name="field55" placeholder="Team 2 Player 1 Order" pattern="-?\d+(\.\d+)?" title="Please enter a valid integer">
+        <input type="text" name="field66" placeholder="Team 2 Player 2 Order" pattern="-?\d+(\.\d+)?" title="Please enter a valid integer">
+        <input type="text" name="field77" placeholder="Team 2 Player 3 Order" pattern="-?\d+(\.\d+)?" title="Please enter a valid integer">
+        <input type="text" name="field88" class="player4-fields" placeholder="Team 2 Player 4 Order" pattern="-?\d+(\.\d+)?" title="Please enter a valid integer">
+      </form>
+    </div>
+
+  </body>
+</html>
