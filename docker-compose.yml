@@ -1,0 +1,29 @@
+services:
+  backend:
+    build: ./backend
+    container_name: sports_analysis_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/static:/app/static
+      - ./backend/utils:/app/utils
+    environment:
+      - PYTHONPATH=/app
+    networks:
+      - sports_analysis_network
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: sports_analysis_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - sports_analysis_network
+    restart: unless-stopped
+
+networks:
+  sports_analysis_network:
+    driver: bridge
