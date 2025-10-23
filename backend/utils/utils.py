@@ -458,6 +458,12 @@ def save_table(data, handicap_tuple):
     else:
         goals1Chukka1 = goals1Chukka1 + hg_winning
         goals2Chukka1 = goals2Chukka1 + hg_losing
+    
+    # Convert to integers if the results are whole numbers
+    if isinstance(goals1Chukka1, float) and goals1Chukka1.is_integer():
+        goals1Chukka1 = int(goals1Chukka1)
+    if isinstance(goals2Chukka1, float) and goals2Chukka1.is_integer():
+        goals2Chukka1 = int(goals2Chukka1)
 
     if (total_chukka == 4):
         # Create a DataFrame with column names and two rows
@@ -658,6 +664,12 @@ def save_barchart(data, handicap_tuple):
     else:
         handicap_goals[0] += hg_winning
         handicap_goals[1] += hg_losing
+    
+    # Convert handicap goals to integers if they are whole numbers
+    if isinstance(handicap_goals[0], float) and handicap_goals[0].is_integer():
+        handicap_goals[0] = int(handicap_goals[0])
+    if isinstance(handicap_goals[1], float) and handicap_goals[1].is_integer():
+        handicap_goals[1] = int(handicap_goals[1])
 
     handicap_goal_sum = handicap_goals[0] + handicap_goals[1]
     ###############################
@@ -794,6 +806,12 @@ def save_line(data, handicap_tuple):
     else:
         goals1Chukka1 += hg_winning
         goals2Chukka1 += hg_losing
+    
+    # Convert to integers if the results are whole numbers
+    if isinstance(goals1Chukka1, float) and goals1Chukka1.is_integer():
+        goals1Chukka1 = int(goals1Chukka1)
+    if isinstance(goals2Chukka1, float) and goals2Chukka1.is_integer():
+        goals2Chukka1 = int(goals2Chukka1)
     ###############################
 
     if (total_chukka == 4):
@@ -973,9 +991,23 @@ def save_team_goals(data,data_file_filename, handicap_tuple):
         hg_losing = int(hg_losing)
 
     if team2_goals > team1_goals:
-        text = f"{team2_name}          {team2_goals+hg_winning}   -    {team1_goals+hg_losing}            {team1_name}"
+        team2_total = team2_goals + hg_winning
+        team1_total = team1_goals + hg_losing
+        # Convert to int if the result is a whole number
+        if isinstance(team2_total, float) and team2_total.is_integer():
+            team2_total = int(team2_total)
+        if isinstance(team1_total, float) and team1_total.is_integer():
+            team1_total = int(team1_total)
+        text = f"{team2_name}          {team2_total}   -    {team1_total}            {team1_name}"
     else:
-        text = f"{team1_name}          {team1_goals+hg_winning}   -    {team2_goals+hg_losing}            {team2_name}"
+        team1_total = team1_goals + hg_winning
+        team2_total = team2_goals + hg_losing
+        # Convert to int if the result is a whole number
+        if isinstance(team1_total, float) and team1_total.is_integer():
+            team1_total = int(team1_total)
+        if isinstance(team2_total, float) and team2_total.is_integer():
+            team2_total = int(team2_total)
+        text = f"{team1_name}          {team1_total}   -    {team2_total}            {team2_name}"
 
     text_width, text_height = textsize(text, font=font)
     text_position = ((width - text_width) // 2, (height - text_height) // 2)
@@ -1214,14 +1246,22 @@ def player_orders_with_arena(fields_tuple_1, fields_tuple_2, arena_toggled=False
         field1, field2, field3, field5, field6, field7 = fields_tuple_1
         field11, field22, field33, field55, field66, field77 = fields_tuple_2
 
-        # Define the fields (3 rows)
+        # Define the fields (3 rows) - preserve original format
         fields_left = [f'1.   {field1}', f'2.   {field2}', f'3.   {field3}']
         fields_middle_left = [f'{field5}', f'{field6}', f'{field7}']
-        total_left = sum([float(i) for i in fields_middle_left])
+        # Calculate total while preserving original format
+        try:
+            total_left = sum([float(i) for i in fields_middle_left])
+        except (ValueError, TypeError):
+            total_left = 0
 
         fields_middle_right = [f'1.   {field11}', f'2.   {field22}', f'3.   {field33}']
         fields_right = [f'{field55}', f'{field66}', f'{field77}']
-        total_right = sum([float(i) for i in fields_right])
+        # Calculate total while preserving original format
+        try:
+            total_right = sum([float(i) for i in fields_right])
+        except (ValueError, TypeError):
+            total_right = 0
 
         y_positions = [0.85, 0.6, 0.3]  # Adjusted for 3 rows
         total_y_position = 0.1  # Total positioned below the last row
@@ -1233,21 +1273,26 @@ def player_orders_with_arena(fields_tuple_1, fields_tuple_2, arena_toggled=False
 
         fields_left = [f'1.   {field1}', f'2.   {field2}', f'3.   {field3}', f'4.   {field4}']
         fields_middle_left = [f'{field5}', f'{field6}', f'{field7}', f'{field8}']
-        total_left = sum([float(i) for i in fields_middle_left])
+        # Calculate total while preserving original format
+        try:
+            total_left = sum([float(i) for i in fields_middle_left])
+        except (ValueError, TypeError):
+            total_left = 0
 
         fields_middle_right = [f'1.   {field11}', f'2.   {field22}', f'3.   {field33}', f'4.   {field44}']
         fields_right = [f'{field55}', f'{field66}', f'{field77}', f'{field88}']
-        total_right = sum([float(i) for i in fields_right])
+        # Calculate total while preserving original format
+        try:
+            total_right = sum([float(i) for i in fields_right])
+        except (ValueError, TypeError):
+            total_right = 0
 
         y_positions = [0.9, 0.7, 0.5, 0.3]  # 4 rows
         total_y_position = 0.1  # Total at the bottom
         fig_height = 3  # Standard figure height for 4 players
 
-    # Ensure totals are integers if possible
-    if total_left.is_integer():
-        total_left = int(total_left)
-    if total_right.is_integer():
-        total_right = int(total_right)
+    # Keep totals as they are calculated (preserve user's original format)
+    # No automatic conversion to integers
 
     # Create the figure with dynamic height
     plt.figure(figsize=(10, fig_height))

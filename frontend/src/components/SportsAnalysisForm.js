@@ -632,7 +632,7 @@ function SportsAnalysisForm() {
                   type="number"
                   step="0.1"
                   placeholder="Order"
-                  {...register('team1_goal1', { valueAsNumber: true })}
+                  {...register('team1_goal1')}
                 />
                 <PlayerInput
                   placeholder="Player 2 Name"
@@ -642,7 +642,7 @@ function SportsAnalysisForm() {
                   type="number"
                   step="0.1"
                   placeholder="Order"
-                  {...register('team1_goal2', { valueAsNumber: true })}
+                  {...register('team1_goal2')}
                 />
                 <PlayerInput
                   placeholder="Player 3 Name"
@@ -652,7 +652,7 @@ function SportsAnalysisForm() {
                   type="number"
                   step="0.1"
                   placeholder="Order"
-                  {...register('team1_goal3', { valueAsNumber: true })}
+                  {...register('team1_goal3')}
                 />
                 {!arenaToggled && (
                   <>
@@ -664,7 +664,7 @@ function SportsAnalysisForm() {
                       type="number"
                       step="0.1"
                       placeholder="Order"
-                      {...register('team1_goal4', { valueAsNumber: true })}
+                      {...register('team1_goal4')}
                     />
                   </>
                 )}
@@ -682,7 +682,7 @@ function SportsAnalysisForm() {
                   type="number"
                   step="0.1"
                   placeholder="Order"
-                  {...register('team2_goal1', { valueAsNumber: true })}
+                  {...register('team2_goal1')}
                 />
                 <PlayerInput
                   placeholder="Player 2 Name"
@@ -692,7 +692,7 @@ function SportsAnalysisForm() {
                   type="number"
                   step="0.1"
                   placeholder="Order"
-                  {...register('team2_goal2', { valueAsNumber: true })}
+                  {...register('team2_goal2')}
                 />
                 <PlayerInput
                   placeholder="Player 3 Name"
@@ -702,7 +702,7 @@ function SportsAnalysisForm() {
                   type="number"
                   step="0.1"
                   placeholder="Order"
-                  {...register('team2_goal3', { valueAsNumber: true })}
+                  {...register('team2_goal3')}
                 />
                 {!arenaToggled && (
                   <>
@@ -714,7 +714,7 @@ function SportsAnalysisForm() {
                       type="number"
                       step="0.1"
                       placeholder="Order"
-                      {...register('team2_goal4', { valueAsNumber: true })}
+                      {...register('team2_goal4')}
                     />
                   </>
                 )}

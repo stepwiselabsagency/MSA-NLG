@@ -27,18 +27,18 @@ async def upload_and_analyze(
     team1_player2: str = Form("team 1 player 2"),
     team1_player3: str = Form("team 1 player 3"),
     team1_player4: str = Form("team 1 player 4"),
-    team1_goal1: float = Form(-99),
-    team1_goal2: float = Form(-99),
-    team1_goal3: float = Form(-99),
-    team1_goal4: float = Form(-99),
+    team1_goal1: str = Form("-99"),
+    team1_goal2: str = Form("-99"),
+    team1_goal3: str = Form("-99"),
+    team1_goal4: str = Form("-99"),
     team2_player1: str = Form("team 2 player 1"),
     team2_player2: str = Form("team 2 player 2"),
     team2_player3: str = Form("team 2 player 3"),
     team2_player4: str = Form("team 2 player 4"),
-    team2_goal1: float = Form(-99),
-    team2_goal2: float = Form(-99),
-    team2_goal3: float = Form(-99),
-    team2_goal4: float = Form(-99),
+    team2_goal1: str = Form("-99"),
+    team2_goal2: str = Form("-99"),
+    team2_goal3: str = Form("-99"),
+    team2_goal4: str = Form("-99"),
     link: str = Form("")
 ):
     try:
@@ -67,6 +67,9 @@ async def upload_and_analyze(
         team1_goals = [team1_goal1, team1_goal2, team1_goal3, team1_goal4]
         team2_players = [team2_player1, team2_player2, team2_player3, team2_player4]
         team2_goals = [team2_goal1, team2_goal2, team2_goal3, team2_goal4]
+        
+        # Preserve original format of goal values (keep as strings to maintain user input format)
+        # The utils functions will handle the conversion when needed for calculations
         
         # Adjust for arena toggle
         if arena_toggled:
