@@ -1291,8 +1291,11 @@ def player_orders_with_arena(fields_tuple_1, fields_tuple_2, arena_toggled=False
         total_y_position = 0.1  # Total at the bottom
         fig_height = 3  # Standard figure height for 4 players
 
-    # Keep totals as they are calculated (preserve user's original format)
-    # No automatic conversion to integers
+    # Convert totals to integers if they are whole numbers (e.g., 40.0 -> 40)
+    if isinstance(total_left, float) and total_left.is_integer():
+        total_left = int(total_left)
+    if isinstance(total_right, float) and total_right.is_integer():
+        total_right = int(total_right)
 
     # Create the figure with dynamic height
     plt.figure(figsize=(10, fig_height))
