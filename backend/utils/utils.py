@@ -26,6 +26,13 @@ def f(x):
 def save_docx(data):
     
     document = Document()
+    # Compute available content width in inches (page width minus margins)
+    try:
+        section = document.sections[0]
+        content_width_inches = (section.page_width - section.left_margin - section.right_margin) / 914400
+    except Exception:
+        # Fallback to a sensible default if section metrics are unavailable
+        content_width_inches = 6.5
     
     #document.add_paragraph(data['title'])
     
@@ -37,8 +44,8 @@ def save_docx(data):
     # Calculate the width and height of the image to maintain aspect ratio
     width, height = img.size
     aspect_ratio = width / height
-    # Set the desired width of the image in the document (you can adjust this as needed)
-    desired_width = 6  # in inches
+    # Set the desired width of the image to the full content width
+    desired_width = content_width_inches  # in inches
     # Calculate the corresponding height based on the aspect ratio
     desired_height = desired_width / aspect_ratio
     # Add the image to the document with the specified width and height
@@ -58,8 +65,8 @@ def save_docx(data):
     # Calculate the width and height of the image to maintain aspect ratio
     width, height = img.size
     aspect_ratio = width / height
-    # Set the desired width of the image in the document (you can adjust this as needed)
-    desired_width = 6  # in inches
+    # Set the desired width of the image to the full content width
+    desired_width = content_width_inches  # in inches
     # Calculate the corresponding height based on the aspect ratio
     desired_height = desired_width / aspect_ratio
     # Add the image to the document with the specified width and height
@@ -74,8 +81,8 @@ def save_docx(data):
     # Calculate the width and height of the image to maintain aspect ratio
     width, height = img.size
     aspect_ratio = width / height
-    # Set the desired width of the image in the document (you can adjust this as needed)
-    desired_width = 6  # in inches
+    # Set the desired width of the image to the full content width
+    desired_width = content_width_inches  # in inches
     # Calculate the corresponding height based on the aspect ratio
     desired_height = desired_width / aspect_ratio
     # Add the image to the document with the specified width and height
@@ -97,8 +104,8 @@ def save_docx(data):
     # Calculate the width and height of the image to maintain aspect ratio
     width, height = img.size
     aspect_ratio = width / height
-    # Set the desired width of the image in the document (you can adjust this as needed)
-    desired_width = 6  # in inches
+    # Set the desired width of the image to the full content width
+    desired_width = content_width_inches  # in inches
     # Calculate the corresponding height based on the aspect ratio
     desired_height = desired_width / aspect_ratio
     # Add the image to the document with the specified width and height
@@ -112,8 +119,8 @@ def save_docx(data):
     # Calculate the width and height of the image to maintain aspect ratio
     width, height = img.size
     aspect_ratio = width / height
-    # Set the desired width of the image in the document (you can adjust this as needed)
-    desired_width = 6  # in inches
+    # Set the desired width of the image to the full content width
+    desired_width = content_width_inches  # in inches
     # Calculate the corresponding height based on the aspect ratio
     desired_height = desired_width / aspect_ratio
     # Add the image to the document with the specified width and height
@@ -127,8 +134,8 @@ def save_docx(data):
     # Calculate the width and height of the image to maintain aspect ratio
     width, height = img.size
     aspect_ratio = width / height
-    # Set the desired width of the image in the document (you can adjust this as needed)
-    desired_width = 6  # in inches
+    # Set the desired width of the image to the full content width
+    desired_width = content_width_inches  # in inches
     # Calculate the corresponding height based on the aspect ratio
     desired_height = desired_width / aspect_ratio
     # Add the image to the document with the specified width and height
@@ -562,9 +569,18 @@ def save_table(data, handicap_tuple):
     if total_chukka == 4:
         frac_for_chukka = 0.5
 
-    chukka_cols = len(data.columns)-1
+    chukka_cols = len(data.columns) - 1
     frac = frac_for_chukka / chukka_cols
-    col_width = [1 - frac_for_chukka] + [frac] * chukka_cols
+    # Allocate a bit more width to the first chukka column to ensure the
+    # "Chukka" header is not truncated, then distribute the rest evenly.
+    if chukka_cols > 1:
+        first_chukka_width = min(frac * 1.6, frac_for_chukka * 0.6)
+        remaining = max(frac_for_chukka - first_chukka_width, 0)
+        other_chukka_width = remaining / (chukka_cols - 1)
+        col_width = [1 - frac_for_chukka] + [first_chukka_width] + [other_chukka_width] * (chukka_cols - 1)
+    else:
+        # Only one chukka column
+        col_width = [1 - frac_for_chukka] + [frac_for_chukka]
 
     # Create the table
     table = plt.table(cellText=new_values, #data.values,
@@ -742,7 +758,7 @@ def save_barchart(data, handicap_tuple):
 
     # Save the figure as PNG
     plt.tight_layout()
-    plt.savefig('stacked_bar_chart.png', dpi=300);  # Adjust the filename and DPI as desired
+    plt.savefig('stacked_bar_chart.png', dpi=300, bbox_inches='tight');  # Adjust the filename and DPI as desired
 
     # Close the plot
     plt.close()
@@ -936,7 +952,7 @@ def save_line(data, handicap_tuple):
     plt.tight_layout()
     #plt.show()
 
-    plt.savefig('stacked_line_chart.png', dpi=300);  # Adjust the filename and DPI as desired
+    plt.savefig('stacked_line_chart.png', dpi=300, bbox_inches='tight');  # Adjust the filename and DPI as desired
 
     # Close the plot
     plt.close()
@@ -947,6 +963,92 @@ def textsize(text, font):
     _, _, width, height = draw.textbbox((0, 0), text=text, font=font)
     return width, height
 
+def load_font_with_fallback(font_size):
+    """
+    Load a TTF font with graceful fallbacks across platforms.
+    """
+    try:
+        return ImageFont.truetype("arial.ttf", font_size)
+    except OSError:
+        for path in [
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf",
+        ]:
+            try:
+                return ImageFont.truetype(path, font_size)
+            except OSError:
+                continue
+        return ImageFont.load_default()
+
+def render_centered_text_image(
+    text,
+    base_width,
+    height,
+    background_color,
+    text_color,
+    initial_font_size,
+    min_font_size=14,
+    horizontal_padding=40,
+):
+    """
+    Render a single-line centered text into an image. If the text does not fit the
+    base_width, reduce font size down to min_font_size; if still too wide, expand
+    the canvas width to fit with horizontal padding.
+    """
+    font_size = int(initial_font_size)
+    font = load_font_with_fallback(font_size)
+    text_width, text_height = textsize(text, font)
+    width = int(base_width)
+
+    # Try to shrink font to fit into current width
+    while text_width + horizontal_padding > width and font_size > min_font_size:
+        font_size -= 1
+        font = load_font_with_fallback(font_size)
+        text_width, text_height = textsize(text, font)
+
+    # If still doesn't fit, expand width to fit the text
+    if text_width + horizontal_padding > width:
+        width = text_width + horizontal_padding
+
+    image = Image.new("RGB", (width, height), background_color)
+    draw = ImageDraw.Draw(image)
+    position = ((width - text_width) // 2, (height - text_height) // 2)
+    draw.text(position, text, fill=text_color, font=font)
+    return image
+
+def render_single_line_banner(
+    text,
+    target_width_px,
+    background_color='#800000',
+    text_color='#ffffff',
+    max_font_size=120,
+    min_font_size=28,
+    horizontal_padding=40,
+    vertical_padding=20,
+):
+    """
+    Create a single-line banner image where the text fills the target width.
+    The function chooses the largest font size that keeps the text (plus padding)
+    within target_width_px, and uses minimal vertical padding for a tight banner.
+    """
+    font_size = int(max_font_size)
+    font = load_font_with_fallback(font_size)
+    text_width, text_height = textsize(text, font)
+
+    while (text_width + 2 * horizontal_padding) > target_width_px and font_size > min_font_size:
+        font_size -= 1
+        font = load_font_with_fallback(font_size)
+        text_width, text_height = textsize(text, font)
+
+    width = max(target_width_px, text_width + 2 * horizontal_padding)
+    height = text_height + 2 * vertical_padding
+
+    image = Image.new("RGB", (width, height), background_color)
+    draw = ImageDraw.Draw(image)
+    position = ((width - text_width) // 2, (height - text_height) // 2)
+    draw.text(position, text, fill=text_color, font=font)
+    return image
+
 def save_team_goals(data,data_file_filename, handicap_tuple):
     finalLst = data_Extract(data)
     extracted_data, filename = single_file(finalLst, data_file_filename)
@@ -955,30 +1057,9 @@ def save_team_goals(data,data_file_filename, handicap_tuple):
     team1_goals = extracted_data['goals1'][0]
     team2_goals = extracted_data['goals2'][0]
 
-    # Create an image with a dark green background
-    width, height = 1000, 100
+    # Base styling for score line image
+    base_width, height = 1000, 100
     bg_color = '#800000'  # Maroon Red Color
-    image = Image.new("RGB", (width, height), bg_color)
-    
-    # Load a font with fallback
-    font_size = 25
-    try:
-        # Try to load arial.ttf first
-        font = ImageFont.truetype("arial.ttf", font_size)
-    except OSError:
-        try:
-            # Try to load DejaVu Sans (common in Linux containers)
-            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", font_size)
-        except OSError:
-            try:
-                # Try to load Liberation Sans
-                font = ImageFont.truetype("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf", font_size)
-            except OSError:
-                # Fall back to default font
-                font = ImageFont.load_default()
-    
-    # Draw the text on the image
-    draw = ImageDraw.Draw(image)
 
     hg_winning, hg_losing = handicap_tuple
 
@@ -1009,12 +1090,18 @@ def save_team_goals(data,data_file_filename, handicap_tuple):
             team2_total = int(team2_total)
         text = f"{team1_name}          {team1_total}   -    {team2_total}            {team2_name}"
 
-    text_width, text_height = textsize(text, font=font)
-    text_position = ((width - text_width) // 2, (height - text_height) // 2)
-    text_color = '#ffffff'  # white color
+    # Render centered text, fitting or expanding width as needed
+    image = render_centered_text_image(
+        text=text,
+        base_width=base_width,
+        height=height,
+        background_color=bg_color,
+        text_color='#ffffff',
+        initial_font_size=25,
+        min_font_size=14,
+        horizontal_padding=40,
+    )
 
-    draw.text(text_position, text, fill=text_color, font=font)
-    
     # Save the image
     image.save("formatted_result.png")
 
@@ -1042,37 +1129,18 @@ def save_game_info(data, data_file_filename):
     club = extracted_data['club'][0]
     tournament = extracted_data['tournament'][0]
     
-    # Create an image with a dark green background
-    width, height = 1000, 50
-    bg_color = '#800000'  # Maroon red color
-    image = Image.new("RGB", (width, height), bg_color)
-    
-    # Load a font with fallback
-    font_size = 25
-    try:
-        # Try to load arial.ttf first
-        font = ImageFont.truetype("arial.ttf", font_size)
-    except OSError:
-        try:
-            # Try to load DejaVu Sans (common in Linux containers)
-            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", font_size)
-        except OSError:
-            try:
-                # Try to load Liberation Sans
-                font = ImageFont.truetype("/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf", font_size)
-            except OSError:
-                # Fall back to default font
-                font = ImageFont.load_default()
-        
-    # Draw the text on the image
-    draw = ImageDraw.Draw(image)
+    # Prepare text and render into an image that fits
     text = f"{output_date_str} - {club} - {tournament}"
-    # text_width, text_height = textsize(text)
-    text_width, text_height = textsize(text, font=font)
-    text_position = ((width - text_width) // 2, (height - text_height) // 2)
-    text_color = '#ffffff'  # white color
-    # draw.text(text_position, text, fill=text_color)
-    draw.text(text_position, text, fill=text_color, font=font)
+    image = render_centered_text_image(
+        text=text,
+        base_width=1000,
+        height=50,
+        background_color='#800000',
+        text_color='#ffffff',
+        initial_font_size=25,
+        min_font_size=14,
+        horizontal_padding=40,
+    )
 
     # Save the image
     image.save("formatted_result_game.png")
@@ -1201,11 +1269,18 @@ def get_header(data, data_file_filename):
 
 def save_title_date(data, data_file_filename):
     title, output_date_str = get_header(data, data_file_filename)
-    plt.figure(figsize=(8, 1))
-    plt.text(0.5, 0.5, f'{title}', ha='center', va='center', fontsize=20)
-    plt.axis('off')  # Turn off axis
-    plt.tight_layout()  # Adjust layout
-    plt.savefig('match_info.png', dpi=300)  # Save as PNG with high resolution
+    # Render a tight single-line banner with large font to minimize extra space
+    banner = render_single_line_banner(
+        text=title,
+        target_width_px=2400,
+        background_color='#FFFFFF',
+        text_color='#000000',
+        max_font_size=120,
+        min_font_size=36,
+        horizontal_padding=32,
+        vertical_padding=12,
+    )
+    banner.save('match_info.png')
 
 def create_combine_image():
 
